@@ -1288,6 +1288,10 @@
                 text: 'Single node',
                 value: 'SINGLE_NODE',
                 description: 'All FlowFiles will be sent to the same node. Which node they are sent to is not defined.'
+            }, {
+                text: 'Fluid',
+                value: 'FLUID',
+                description: 'TODO'
         }],
 
         loadBalanceCompressionOptions: [{

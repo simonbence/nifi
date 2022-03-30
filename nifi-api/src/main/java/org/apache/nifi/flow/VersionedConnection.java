@@ -140,7 +140,7 @@ public class VersionedConnection extends VersionedComponent {
     }
 
     @ApiModelProperty(value = "The Strategy to use for load balancing data across the cluster, or null, if no Load Balance Strategy has been specified.",
-            allowableValues = "DO_NOT_LOAD_BALANCE, PARTITION_BY_ATTRIBUTE, ROUND_ROBIN, SINGLE_NODE")
+            allowableValues = "DO_NOT_LOAD_BALANCE, PARTITION_BY_ATTRIBUTE, ROUND_ROBIN, SINGLE_NODE, FLUID")
     public String getLoadBalanceStrategy() {
         return loadBalanceStrategy;
     }

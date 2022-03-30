@@ -19,6 +19,7 @@ package org.apache.nifi.controller.state;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.nifi.components.state.StateMap;
 
@@ -49,5 +50,18 @@ public class StandardStateMap implements StateMap {
     @Override
     public String toString() {
         return "StandardStateMap[version=" + version + ", values=" + stateValues + "]";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        StandardStateMap that = (StandardStateMap) o;
+        return version == that.version && Objects.equals(stateValues, that.stateValues);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(stateValues, version);
     }
 }

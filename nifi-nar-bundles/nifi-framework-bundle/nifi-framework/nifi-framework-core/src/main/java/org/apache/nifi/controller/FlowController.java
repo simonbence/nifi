@@ -73,6 +73,8 @@ import org.apache.nifi.controller.queue.clustered.client.StandardLoadBalanceFlow
 import org.apache.nifi.controller.queue.clustered.client.async.nio.NioAsyncLoadBalanceClientFactory;
 import org.apache.nifi.controller.queue.clustered.client.async.nio.NioAsyncLoadBalanceClientRegistry;
 import org.apache.nifi.controller.queue.clustered.client.async.nio.NioAsyncLoadBalanceClientTask;
+import org.apache.nifi.controller.queue.clustered.partition.StateBasedLoadBalancingDataSourceFactory;
+import org.apache.nifi.controller.queue.clustered.partition.StateBasedLoadBalancingDataSourceRecorder;
 import org.apache.nifi.controller.queue.clustered.server.ClusterLoadBalanceAuthorizer;
 import org.apache.nifi.controller.queue.clustered.server.ConnectionLoadBalanceServer;
 import org.apache.nifi.controller.queue.clustered.server.LoadBalanceAuthorizer;
@@ -321,6 +323,9 @@ public class FlowController implements ReportingTaskProvider, Authorizable, Node
     private final RepositoryContextFactory repositoryContextFactory;
     private final RingBufferGarbageCollectionLog gcLog;
     private final Optional<FlowEngine> longRunningTaskMonitorThreadPool;
+
+    private final StateBasedLoadBalancingDataSourceRecorder recorder = new StateBasedLoadBalancingDataSourceRecorder();
+    private final StateBasedLoadBalancingDataSourceFactory stateBasedLoadBalancingDataSourceFactory = new StateBasedLoadBalancingDataSourceFactory(recorder);
 
     /**
      * true if controller is configured to operate in a clustered environment
@@ -798,6 +803,8 @@ public class FlowController implements ReportingTaskProvider, Authorizable, Node
         longRunningTaskMonitorThreadPool = isLongRunningTaskMonitorEnabled()
                 ? Optional.of(new FlowEngine(1, "Long Running Task Monitor", true))
                 : Optional.empty();
+
+        recorder.start();
     }
 
     @Override
@@ -1988,7 +1995,7 @@ public class FlowController implements ReportingTaskProvider, Authorizable, Node
                             processGroup.getDefaultFlowFileExpiration(), processGroup.getDefaultBackPressureObjectThreshold(), processGroup.getDefaultBackPressureDataSizeThreshold());
                 } else {
                     flowFileQueue = new SocketLoadBalancedFlowFileQueue(id, eventListener, processScheduler, flowFileRepository, provenanceRepository, contentRepository, resourceClaimManager,
-                            clusterCoordinator, loadBalanceClientRegistry, swapManager, nifiProperties.getQueueSwapThreshold(), eventReporter);
+                            clusterCoordinator, loadBalanceClientRegistry, swapManager, nifiProperties.getQueueSwapThreshold(), eventReporter, stateManagerProvider, stateBasedLoadBalancingDataSourceFactory);
 
                     flowFileQueue.setFlowFileExpiration(processGroup.getDefaultFlowFileExpiration());
                     flowFileQueue.setBackPressureObjectThreshold(processGroup.getDefaultBackPressureObjectThreshold());

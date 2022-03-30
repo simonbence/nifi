@@ -239,7 +239,7 @@ public class ClusteredSwapFileIT extends FrameworkIntegrationTest {
         final AsyncLoadBalanceClientRegistry clientRegistry = Mockito.mock(AsyncLoadBalanceClientRegistry.class);
 
         return new SocketLoadBalancedFlowFileQueue(uuid, ConnectionEventListener.NOP_EVENT_LISTENER, processScheduler, getFlowFileRepository(), getProvenanceRepository(),
-            getContentRepository(), resourceClaimManager, getClusterCoordinator(), clientRegistry, swapManager, 20000, EventReporter.NO_OP);
+            getContentRepository(), resourceClaimManager, getClusterCoordinator(), clientRegistry, swapManager, 20000, EventReporter.NO_OP, stateManagerProvider);
     }
 
     @Override

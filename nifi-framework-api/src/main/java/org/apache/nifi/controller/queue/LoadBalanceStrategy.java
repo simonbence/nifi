@@ -36,6 +36,11 @@ public enum LoadBalanceStrategy {
     ROUND_ROBIN,
 
     /**
+     * TODO
+     */
+    FLUID,
+
+    /**
      * All FlowFiles will be sent to the same node. Which node they are sent to is not defined.
      */
     SINGLE_NODE;

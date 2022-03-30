@@ -1093,7 +1093,7 @@ public class JettyServer implements NiFiServer, ExtensionUiLoader {
                         flowService.stop(false);
                     }
                     logger.error("Unable to load flow due to: " + e, e);
-                    throw new Exception("Unable to load flow due to: " + e); // cannot wrap the exception as they are not defined in a classloader accessible to the caller
+                    throw new Exception("Unable to l    oad flow due to: " + e); // cannot wrap the exception as they are not defined in a classloader accessible to the caller
                 }
             }
 

@@ -128,7 +128,7 @@ public class TestSocketLoadBalancedFlowFileQueue {
 
         final AsyncLoadBalanceClientRegistry registry = mock(AsyncLoadBalanceClientRegistry.class);
         queue = new SocketLoadBalancedFlowFileQueue("unit-test", new NopConnectionEventListener(), scheduler, flowFileRepo, provRepo,
-            contentRepo, claimManager, clusterCoordinator, registry, swapManager, 10000, eventReporter);
+            contentRepo, claimManager, clusterCoordinator, registry, swapManager, 10000, eventReporter, stateManagerProvider);
     }
 
     private NodeIdentifier createNodeIdentifier() {
@@ -204,7 +204,7 @@ public class TestSocketLoadBalancedFlowFileQueue {
         when(clusterCoordinator.getLocalNodeIdentifier()).thenReturn(null);
 
         queue = new SocketLoadBalancedFlowFileQueue("unit-test", new NopConnectionEventListener(), scheduler, flowFileRepo, provRepo,
-            contentRepo, claimManager, clusterCoordinator, registry, swapManager, 10000, eventReporter);
+            contentRepo, claimManager, clusterCoordinator, registry, swapManager, 10000, eventReporter, stateManagerProvider);
         queue.setPriorities(Collections.singletonList(iValuePrioritizer));
 
         when(clusterCoordinator.getLocalNodeIdentifier()).thenReturn(null);
@@ -540,7 +540,7 @@ public class TestSocketLoadBalancedFlowFileQueue {
 
         final AsyncLoadBalanceClientRegistry registry = mock(AsyncLoadBalanceClientRegistry.class);
         queue = new SocketLoadBalancedFlowFileQueue("unit-test", new NopConnectionEventListener(), mock(ProcessScheduler.class), flowFileRepo, provRepo,
-            contentRepo, claimManager, clusterCoordinator, registry, swapManager, 10000, eventReporter);
+            contentRepo, claimManager, clusterCoordinator, registry, swapManager, 10000, eventReporter, stateManagerProvider);
 
         queue.setFlowFilePartitioner(new RoundRobinPartitioner());
 

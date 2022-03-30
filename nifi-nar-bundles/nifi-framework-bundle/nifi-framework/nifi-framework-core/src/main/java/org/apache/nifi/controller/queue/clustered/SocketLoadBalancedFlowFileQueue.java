@@ -22,11 +22,13 @@ import org.apache.nifi.cluster.coordination.ClusterTopologyEventListener;
 import org.apache.nifi.cluster.coordination.node.NodeConnectionState;
 import org.apache.nifi.cluster.coordination.node.NodeConnectionStatus;
 import org.apache.nifi.cluster.protocol.NodeIdentifier;
+import org.apache.nifi.components.state.StateManagerProvider;
 import org.apache.nifi.controller.ProcessScheduler;
 import org.apache.nifi.controller.queue.AbstractFlowFileQueue;
 import org.apache.nifi.controller.queue.ConnectionEventListener;
 import org.apache.nifi.controller.queue.DropFlowFileRequest;
 import org.apache.nifi.controller.queue.DropFlowFileState;
+import org.apache.nifi.controller.queue.clustered.partition.StateBasedLoadBalancingDataSourceFactory;
 import org.apache.nifi.controller.status.FlowFileAvailability;
 import org.apache.nifi.controller.queue.FlowFileQueueContents;
 import org.apache.nifi.controller.queue.IllegalClusterStateException;
@@ -43,6 +45,7 @@ import org.apache.nifi.controller.queue.clustered.client.async.AsyncLoadBalanceC
 import org.apache.nifi.controller.queue.clustered.partition.CorrelationAttributePartitioner;
 import org.apache.nifi.controller.queue.clustered.partition.FirstNodePartitioner;
 import org.apache.nifi.controller.queue.clustered.partition.FlowFilePartitioner;
+import org.apache.nifi.controller.queue.clustered.partition.FluentLoadBalancingPartitioner;
 import org.apache.nifi.controller.queue.clustered.partition.LocalPartitionPartitioner;
 import org.apache.nifi.controller.queue.clustered.partition.LocalQueuePartition;
 import org.apache.nifi.controller.queue.clustered.partition.NonLocalPartitionPartitioner;
@@ -51,6 +54,7 @@ import org.apache.nifi.controller.queue.clustered.partition.RebalancingPartition
 import org.apache.nifi.controller.queue.clustered.partition.RemoteQueuePartition;
 import org.apache.nifi.controller.queue.clustered.partition.RoundRobinPartitioner;
 import org.apache.nifi.controller.queue.clustered.partition.StandardRebalancingPartition;
+import org.apache.nifi.controller.queue.clustered.partition.StateBasedLoadBalancingDataSource;
 import org.apache.nifi.controller.queue.clustered.partition.SwappablePriorityQueueLocalPartition;
 import org.apache.nifi.controller.repository.ContentRepository;
 import org.apache.nifi.controller.repository.FlowFileRecord;
@@ -116,6 +120,7 @@ public class SocketLoadBalancedFlowFileQueue extends AbstractFlowFileQueue imple
     private final ProvenanceEventRepository provRepo;
     private final ContentRepository contentRepo;
     private final Set<NodeIdentifier> nodeIdentifiers;
+    private final StateManagerProvider stateManagerProvider;
 
     private final ReadWriteLock partitionLock = new ReentrantReadWriteLock();
     private final Lock partitionReadLock = partitionLock.readLock();
@@ -125,11 +130,13 @@ public class SocketLoadBalancedFlowFileQueue extends AbstractFlowFileQueue imple
     private boolean stopped = true;
     private volatile boolean offloaded = false;
 
+    private final StateBasedLoadBalancingDataSourceFactory stateBasedLoadBalancingDataSourceFactory;
 
     public SocketLoadBalancedFlowFileQueue(final String identifier, final ConnectionEventListener eventListener, final ProcessScheduler scheduler, final FlowFileRepository flowFileRepo,
                                            final ProvenanceEventRepository provRepo, final ContentRepository contentRepo, final ResourceClaimManager resourceClaimManager,
                                            final ClusterCoordinator clusterCoordinator, final AsyncLoadBalanceClientRegistry clientRegistry, final FlowFileSwapManager swapManager,
-                                           final int swapThreshold, final EventReporter eventReporter) {
+                                           final int swapThreshold, final EventReporter eventReporter, StateManagerProvider stateManagerProvider,
+                                           final StateBasedLoadBalancingDataSourceFactory stateBasedLoadBalancingDataSourceFactory) {
 
         super(identifier, scheduler, flowFileRepo, provRepo, resourceClaimManager);
         this.eventListener = eventListener;
@@ -140,6 +147,8 @@ public class SocketLoadBalancedFlowFileQueue extends AbstractFlowFileQueue imple
         this.contentRepo = contentRepo;
         this.clusterCoordinator = clusterCoordinator;
         this.clientRegistry = clientRegistry;
+        this.stateManagerProvider = stateManagerProvider;
+        this.stateBasedLoadBalancingDataSourceFactory = stateBasedLoadBalancingDataSourceFactory;
 
         localPartition = new SwappablePriorityQueueLocalPartition(swapManager, swapThreshold, eventReporter, this, this::drop);
         rebalancingPartition = new StandardRebalancingPartition(swapManager, swapThreshold, eventReporter, this, this::drop);
@@ -192,6 +201,7 @@ public class SocketLoadBalancedFlowFileQueue extends AbstractFlowFileQueue imple
 
     @Override
     public synchronized void setLoadBalanceStrategy(final LoadBalanceStrategy strategy, final String partitioningAttribute) {
+        // TODO this might be a point to stop thread
         final LoadBalanceStrategy currentStrategy = getLoadBalanceStrategy();
         final String currentPartitioningAttribute = getPartitioningAttribute();
 
@@ -227,6 +237,12 @@ public class SocketLoadBalancedFlowFileQueue extends AbstractFlowFileQueue imple
                 break;
             case ROUND_ROBIN:
                 partitioner = new RoundRobinPartitioner();
+                break;
+            case FLUID:
+
+                final StateBasedLoadBalancingDataSource dataSource = stateBasedLoadBalancingDataSourceFactory.getInstance(clusterCoordinator.getLocalNodeIdentifier(), localPartition, stateManagerProvider.getStateManager(getIdentifier()));
+                dataSource.startRecording(); // TODO when to finish?
+                partitioner = new FluentLoadBalancingPartitioner(this::getMaxQueueSize, dataSource);
                 break;
             case SINGLE_NODE:
                 partitioner = new FirstNodePartitioner();

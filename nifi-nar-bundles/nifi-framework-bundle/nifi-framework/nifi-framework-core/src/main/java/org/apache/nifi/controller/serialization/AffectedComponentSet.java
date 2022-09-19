@@ -81,7 +81,7 @@ public class AffectedComponentSet {
     private final Set<ControllerServiceNode> controllerServices = new HashSet<>();
     private final Set<ReportingTaskNode> reportingTasks = new HashSet<>();
     private final Set<ParameterProviderNode> parameterProviders = new HashSet<>();
-    private final Set<FlowRegistryClientNode> flowRegistryCliens = new HashSet<>();
+    private final Set<FlowRegistryClientNode> flowRegistryClients = new HashSet<>();
 
     public AffectedComponentSet(final FlowController flowController) {
         this.flowController = flowController;
@@ -219,11 +219,11 @@ public class AffectedComponentSet {
             return;
         }
 
-        flowRegistryCliens.add(flowRegistryClient);
+        flowRegistryClients.add(flowRegistryClient);
     }
 
     public boolean isFlowRegistryClientAffected(final String flowRegistryClientId) {
-        for (final FlowRegistryClientNode flowRegistryClientNode : flowRegistryCliens) {
+        for (final FlowRegistryClientNode flowRegistryClientNode : flowRegistryClients) {
             if (flowRegistryClientNode.getIdentifier().equals(flowRegistryClientId)) {
                 return true;
             }
@@ -543,7 +543,7 @@ public class AffectedComponentSet {
         processors.removeIf(filter::testProcessor);
         controllerServices.removeIf(filter::testControllerService);
         reportingTasks.removeIf(filter::testReportingTask);
-        flowRegistryCliens.removeIf(filter::testFlowRegistryClient);
+        flowRegistryClients.removeIf(filter::testFlowRegistryClient);
     }
 
     /**
@@ -564,7 +564,7 @@ public class AffectedComponentSet {
         processors.stream().filter(processor -> processor.getProcessGroup().getProcessor(processor.getIdentifier()) != null).forEach(existing::addProcessor);
         reportingTasks.stream().filter(task -> flowController.getReportingTaskNode(task.getIdentifier()) != null).forEach(existing::addReportingTask);
         controllerServices.stream().filter(service -> serviceProvider.getControllerServiceNode(service.getIdentifier()) != null).forEach(existing::addControllerServiceWithoutReferences);
-        flowRegistryCliens.stream().filter(client -> flowManager.getFlowRegistryClient(client.getIdentifier()) != null).forEach(existing::addFlowRegistryClient);
+        flowRegistryClients.stream().filter(client -> flowManager.getFlowRegistryClient(client.getIdentifier()) != null).forEach(existing::addFlowRegistryClient);
 
         return existing;
     }
@@ -704,7 +704,7 @@ public class AffectedComponentSet {
             ", remoteOutputPorts=" + remoteOutputPorts +
             ", processors=" + processors +
             ", parameterProviders=" + parameterProviders +
-            ", flowRegistryCliens=" + flowRegistryCliens +
+            ", flowRegistryCliens=" + flowRegistryClients +
             ", controllerServices=" + controllerServices +
             ", reportingTasks=" + reportingTasks +
             "]";

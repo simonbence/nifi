@@ -108,7 +108,7 @@ public class StandardStatelessDataflowFactory implements StatelessDataflowFactor
                 throw new IOException("Working Directory " + narExpansionDirectory + " does not exist and could not be created");
             }
 
-            // TODO-2803
+            // TODO-NIFI-10497
             final InMemoryFlowRegistry flowRegistry = new InMemoryFlowRegistry();
 //            flowRegistry.registerFlowSnapshot(dataflowDefinition.getVersionedExternalFlow());
 //            final FlowFileEventRepositoryRegistryManager flowRegistryManager = new StandardFlowRegistryManager();

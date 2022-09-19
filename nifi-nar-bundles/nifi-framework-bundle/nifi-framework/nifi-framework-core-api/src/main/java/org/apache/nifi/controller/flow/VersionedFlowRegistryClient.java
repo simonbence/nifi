@@ -21,6 +21,7 @@ import io.swagger.annotations.ApiModelProperty;
 import org.apache.nifi.flow.ComponentType;
 import org.apache.nifi.flow.VersionedConfigurableExtension;
 
+// TODO-NIFI-10497 Move this next to VersionedProcessor (into the API)
 public class VersionedFlowRegistryClient extends VersionedConfigurableExtension {
     @Deprecated
     private String url;

@@ -395,10 +395,10 @@ public class StandardFlowManager extends AbstractFlowManager implements FlowMana
                 .type(type)
                 .flowController(flowController)
                 .bundleCoordinate(bundleCoordinate)
-                .controllerServiceProvider(flowController.getControllerServiceProvider()) // TODO-2803 I am not sure it is needed
+                .controllerServiceProvider(flowController.getControllerServiceProvider()) // TODO-NIFI-10497 I am not sure it is needed
                 .processScheduler(processScheduler)
                 .nodeTypeProvider(flowController)
-                .validationTrigger(flowController.getValidationTrigger()) // TODO-2803 I am not sure it is needed
+                .validationTrigger(flowController.getValidationTrigger()) // TODO-NIFI-10497 I am not sure it is needed
                 .reloadComponent(flowController.getReloadComponent())
                 .variableRegistry(flowController.getVariableRegistry())
                 .addClasspathUrls(additionalUrls)

@@ -324,6 +324,17 @@ public class StatelessFlowManager extends AbstractFlowManager implements FlowMan
     }
 
     @Override
+    public FlowRegistryClientNode createFlowRegistryClient(String type, String id, BundleCoordinate bundleCoordinate, Set<URL> additionalUrls, boolean firstTimeAdded, boolean registerLogObserver, String classloaderIsolationKey) {
+        // TODO-NIFI-10497
+        return null;
+    }
+
+    @Override
+    public void removeFlowRegistryClientNode(FlowRegistryClientNode clientNode) {
+        // TODO-NIFI-10497 Add proper implementation
+    }
+
+    @Override
     protected ExtensionManager getExtensionManager() {
         return statelessEngine.getExtensionManager();
     }
@@ -336,16 +347,6 @@ public class StatelessFlowManager extends AbstractFlowManager implements FlowMan
     @Override
     public Set<ReportingTaskNode> getAllReportingTasks() {
         return Collections.emptySet();
-    }
-
-    @Override
-    public FlowRegistryClientNode createFlowRegistryClient(String type, String id, BundleCoordinate bundleCoordinate) {
-        return null; // TODO-2803 Add proper implementation
-    }
-
-    @Override
-    public void removeFlowRegistryClientNode(FlowRegistryClientNode clientNode) {
-        // TODO-2803 Add proper implementation
     }
 
     @Override

@@ -16,7 +16,7 @@
  */
 package org.apache.nifi.h2.database.migration;
 
-import org.h2.jdbcx.JdbcDataSource; // TODO-2803 Should be reverted before PR
+import org.h2.jdbcx.JdbcDataSource; // TODO-NIFI-10497 Should be reverted before PR
 
 import java.io.File;
 import java.nio.file.Files;

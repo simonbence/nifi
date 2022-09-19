@@ -427,9 +427,10 @@ public interface NiFiServiceFacade {
     Set<DocumentedTypeDTO> getReportingTaskTypes(final String bundleGroupFilter, final String bundleArtifactFilter, final String typeFilter);
 
     /**
-     +     * TODO-2803
-     +     * @return
-     +     */
+     * Returns the list of flow registry client types.
+     *
+     * @return The list of available flow registry client types matching specified criteria
+     */
     Set<DocumentedTypeDTO> getFlowRegistryTypes();
 
     /**

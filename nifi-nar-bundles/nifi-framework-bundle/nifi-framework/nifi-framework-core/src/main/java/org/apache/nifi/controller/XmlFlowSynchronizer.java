@@ -434,12 +434,12 @@ public class XmlFlowSynchronizer implements FlowSynchronizer {
                     final String description = getString(flowRegistryElement, "description");
 
                     final FlowManager client = controller.getFlowManager();
-                    final FlowRegistryClientDTO registryClientDTO = null; // TODO-2803 Create this
+                    final FlowRegistryClientDTO registryClientDTO = null; // TODO-// TODO-NIFI-10497 Create this
 //                    try {
                         client.createFlowRegistryClient(null, registryId, null, Collections.emptySet() , false, true, null);
                         // TODO config..
 //                    } catch (FlowRegistryException e) {
-//                        throw new ReportingTaskInstantiationException(e.getMessage()); // TODO-2803
+//                        throw new ReportingTaskInstantiationException(e.getMessage()); // TODO-// TODO-NIFI-10497
 //                    }
                 }
             }

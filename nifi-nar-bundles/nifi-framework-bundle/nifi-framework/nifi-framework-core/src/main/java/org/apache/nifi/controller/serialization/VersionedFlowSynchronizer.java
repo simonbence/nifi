@@ -366,7 +366,7 @@ public class VersionedFlowSynchronizer implements FlowSynchronizer {
                 inheritParameterProviders(controller, versionedFlow, affectedComponentSet);
                 inheritParameterContexts(controller, versionedFlow);
                 inheritReportingTasks(controller, versionedFlow, affectedComponentSet);
-                inheritRegistries(controller, versionedFlow);
+                inheritRegistries(controller, versionedFlow, affectedComponentSet);
 
                 final ComponentIdGenerator componentIdGenerator = (proposedId, instanceId, destinationGroupId) -> instanceId;
 
@@ -499,7 +499,7 @@ public class VersionedFlowSynchronizer implements FlowSynchronizer {
         }
     }
 
-    private void inheritRegistries(final FlowController controller, final VersionedDataflow dataflow) {
+    private void inheritRegistries(final FlowController controller, final VersionedDataflow dataflow, final AffectedComponentSet affectedComponentSet) {
         final FlowManager flowManger = controller.getFlowManager();
 
         for (final VersionedFlowRegistryClient versionedFlowRegistryClient : dataflow.getRegistries()) {
@@ -507,8 +507,7 @@ public class VersionedFlowSynchronizer implements FlowSynchronizer {
 
             if (existing == null) {
                 addFlowRegistryClient(controller, versionedFlowRegistryClient);
-            } else {
-                // TODO-2803 AffectedComponentSet like in case of inheritReportingTasks
+            } else if (affectedComponentSet.isFlowRegistryClientAffected(existing.getIdentifier())) {
                 updateRegistry(existing, versionedFlowRegistryClient, controller);
             }
         }

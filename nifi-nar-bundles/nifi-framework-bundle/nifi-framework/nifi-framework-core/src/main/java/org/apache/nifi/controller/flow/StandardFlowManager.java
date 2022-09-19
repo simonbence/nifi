@@ -371,7 +371,9 @@ public class StandardFlowManager extends AbstractFlowManager implements FlowMana
     }
 
     @Override
-    public FlowRegistryClientNode createFlowRegistryClient(final String type, final String id, final BundleCoordinate bundleCoordinate) {
+    public FlowRegistryClientNode createFlowRegistryClient(
+            final String type, final String id, final BundleCoordinate bundleCoordinate, final Set<URL> additionalUrls,
+            final boolean firstTimeAdded, final boolean registerLogObserver, String classloaderIsolationKey) {
         requireNonNull(type);
         requireNonNull(id);
         requireNonNull(bundleCoordinate);
@@ -399,17 +401,15 @@ public class StandardFlowManager extends AbstractFlowManager implements FlowMana
                 .validationTrigger(flowController.getValidationTrigger()) // TODO-2803 I am not sure it is needed
                 .reloadComponent(flowController.getReloadComponent())
                 .variableRegistry(flowController.getVariableRegistry())
-                //.addClasspathUrls(additionalUrls)
+                .addClasspathUrls(additionalUrls)
                 .kerberosConfig(flowController.createKerberosConfig(nifiProperties))
                 .flowController(flowController)
                 .systemSslContext(systemSslContext)
                 .extensionManager(extensionManager)
+                .classloaderIsolationKey(classloaderIsolationKey)
                 .buildFlowRegistryClient();
 
         LogRepositoryFactory.getRepository(clientNode.getIdentifier()).setLogger(clientNode.getLogger());
-
-        final boolean firstTimeAdded = true; // TODO-2803
-        final boolean register = true; // TODO-2803
 
         if (firstTimeAdded) {
             final Class<?> clientClass = clientNode.getComponent().getClass();
@@ -428,7 +428,7 @@ public class StandardFlowManager extends AbstractFlowManager implements FlowMana
             }
         }
 
-        if (register) {
+        if (registerLogObserver) {
             onFlowRegistryClientAdded(clientNode);
 
             // Register log observer to provide bulletins when reporting task logs anything at WARN level or above

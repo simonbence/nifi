@@ -436,7 +436,7 @@ public class XmlFlowSynchronizer implements FlowSynchronizer {
                     final FlowManager client = controller.getFlowManager();
                     final FlowRegistryClientDTO registryClientDTO = null; // TODO-2803 Create this
 //                    try {
-                        client.createFlowRegistryClient(null, registryId, null);
+                        client.createFlowRegistryClient(null, registryId, null, Collections.emptySet() , false, true, null);
                         // TODO config..
 //                    } catch (FlowRegistryException e) {
 //                        throw new ReportingTaskInstantiationException(e.getMessage()); // TODO-2803

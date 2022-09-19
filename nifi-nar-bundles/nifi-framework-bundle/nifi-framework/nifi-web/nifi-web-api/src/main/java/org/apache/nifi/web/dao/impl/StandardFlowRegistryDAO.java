@@ -51,7 +51,8 @@ public class StandardFlowRegistryDAO extends ComponentDAO implements FlowRegistr
         verifyCreate(flowController.getExtensionManager(),  flowRegistryClientDto.getType(), flowRegistryClientDto.getBundle());
 
         final BundleCoordinate bundleCoordinate = BundleUtils.getBundle(flowController.getExtensionManager(), flowRegistryClientDto.getType(), flowRegistryClientDto.getBundle());
-        final FlowRegistryClientNode flowRegistryClient = flowController.getFlowManager().createFlowRegistryClient(flowRegistryClientDto.getType(), flowRegistryClientDto.getId(), bundleCoordinate);
+        final FlowRegistryClientNode flowRegistryClient = flowController.getFlowManager().createFlowRegistryClient(
+                flowRegistryClientDto.getType(), flowRegistryClientDto.getId(), bundleCoordinate, Collections.emptySet(), true, true, null);
 
         configureFlowRegistry(flowRegistryClient, flowRegistryClientDto);
 

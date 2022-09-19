@@ -518,7 +518,7 @@ public class VersionedFlowSynchronizer implements FlowSynchronizer {
         final BundleCoordinate coordinate = createBundleCoordinate(versionedFlowRegistryClient.getBundle(), versionedFlowRegistryClient.getType());
 
         final FlowRegistryClientNode flowRegistryClient = flowController.getFlowManager().createFlowRegistryClient(
-                versionedFlowRegistryClient.getType(), versionedFlowRegistryClient.getIdentifier(), coordinate);
+                versionedFlowRegistryClient.getType(), versionedFlowRegistryClient.getIdentifier(), coordinate, Collections.emptySet() , false, true, null);
         updateRegistry(flowRegistryClient, versionedFlowRegistryClient, flowController);
     }
 
